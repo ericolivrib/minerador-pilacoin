@@ -18,7 +18,7 @@ import java.util.Base64;
 @Service
 public class UserConnectService {
 
-    @Value("${servidor.local}") private String serverAddress;
+    @Value("${servidor.url}") private String serverAddress;
 
     @PostConstruct
     public void init() {

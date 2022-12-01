@@ -1,7 +1,6 @@
 package br.ufsm.csi.pilacoin.service;
 
 import br.ufsm.csi.pilacoin.RestDiff;
-import br.ufsm.csi.pilacoin.salvador.SalvadorDaPatria;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
@@ -22,7 +21,7 @@ import java.util.Objects;
 @Service
 public class WebSocketClientService {
 
-    @Value("${servidor.local}")
+    @Value("${servidor.url}")
     private String serverAddress;
 
     @Getter private final StompSessionHandlerImpl sessionHandler = new StompSessionHandlerImpl();
@@ -76,7 +75,6 @@ public class WebSocketClientService {
         public void handleFrame(StompHeaders headers, Object payload) {
             assert payload != null;
             dificuldade = new BigInteger(((RestDiff) payload).getDificuldade(), 16);
-            SalvadorDaPatria.deu = true;
         }
 
     }

@@ -1,7 +1,6 @@
 package br.ufsm.csi.pilacoin.mining;
 
 import br.ufsm.csi.pilacoin.config.PathConfig;
-import br.ufsm.csi.pilacoin.salvador.SalvadorDaPatria;
 import br.ufsm.csi.pilacoin.service.WebSocketClientService;
 import br.ufsm.csi.pilacoin.util.KeysUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,6 +23,7 @@ import java.util.Random;
 public class PilaCoinMiner {
 
     private final WebSocketClientService webSocket;
+    private BigInteger dificuldade;
 
     @Autowired
     public PilaCoinMiner(WebSocketClientService webSocket) {
@@ -32,24 +32,40 @@ public class PilaCoinMiner {
 
     @PostConstruct
     private void init() {
-        while (true) mine();
+        while (true) {
+            dificuldade = webSocket.getDificuldade();
+
+            if (dificuldade != null) {
+                new Thread(new Mine(webSocket, dificuldade)).start();
+            }
+        }
     }
 
     @SneakyThrows
-    private void mine() {
-        BigInteger numHash = null;
-        int numTentativas = 0;
-        BigInteger dificuldade;
+    private void saveCoin(BigInteger hash) {
+        FileWriter fileWriter = new FileWriter(PathConfig.CAMINHO_CRIPTOMOEDAS, true);
+        BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+        bufferedWriter.newLine();
+        bufferedWriter.write(hash.toString());
+        bufferedWriter.flush();
+    }
 
-        do {
-            dificuldade = webSocket.getDificuldade();
+    private static class Mine implements Runnable {
 
-            while (dificuldade == null) {
-                // Não faz nada...
-            }
+        private final WebSocketClientService webSocket;
+        private final BigInteger dificuldade;
 
-            if (SalvadorDaPatria.deu) {
+        public Mine(WebSocketClientService webSocket, BigInteger dificuldade) {
+            this.webSocket = webSocket;
+            this.dificuldade = dificuldade;
+        }
 
+        @Override
+        @SneakyThrows
+        public void run() {
+            BigInteger numHash;
+
+            do {
                 Random rnd = new SecureRandom();
                 BigInteger magicNumber = new BigInteger(128, rnd).abs();
 
@@ -65,23 +81,23 @@ public class PilaCoinMiner {
                 byte[] hash = md.digest(jsonCoin.getBytes(StandardCharsets.UTF_8));
                 numHash = new BigInteger(hash).abs();
 
-                numTentativas++;
-            }
-        } while (dificuldade != null && Objects.requireNonNull(numHash).compareTo(dificuldade) > 0);
+            } while (Objects.requireNonNull(numHash).compareTo(dificuldade) > 0);
 
-        System.out.println("Pila Coin encontrado em " + numTentativas + " tentativas");
-        System.out.println("Hash: " + numHash);
+            System.out.println("Novo pila encontrado: " + numHash);
 
-        this.saveCoin(numHash);
-    }
+            this.saveCoin(numHash);
+        }
 
-    @SneakyThrows
-    private void saveCoin(BigInteger hash) {
-        FileWriter fileWriter = new FileWriter(PathConfig.CAMINHO_CRIPTOMOEDAS, true);
-        BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-        bufferedWriter.newLine();
-        bufferedWriter.write(hash.toString());
-        bufferedWriter.flush();
+        @SneakyThrows
+        private void saveCoin(BigInteger hash) {
+            System.out.println("Salvando pila...");
+            FileWriter fileWriter = new FileWriter(PathConfig.CAMINHO_CRIPTOMOEDAS, true);
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+            bufferedWriter.newLine();
+            bufferedWriter.write(hash.toString());
+            bufferedWriter.flush();
+        }
+
     }
 
 }
