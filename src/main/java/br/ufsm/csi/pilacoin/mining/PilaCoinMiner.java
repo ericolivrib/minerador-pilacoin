@@ -69,7 +69,7 @@ public class PilaCoinMiner {
         System.out.println("Novo pila encontrado: " + numHash);
 
         saveCoin(numHash);
-        pilaCoinService.validarPilaCoin(pilaCoin);
+        pilaCoinService.enviar(pilaCoin);
     }
 
     @SneakyThrows

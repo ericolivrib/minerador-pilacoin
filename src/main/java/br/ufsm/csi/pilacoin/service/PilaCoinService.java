@@ -11,7 +11,7 @@ public class PilaCoinService extends SwaggerService {
 
     private final String url = "http://" + serverAddress + "/pilacoin/";
 
-    public void validarPilaCoin(PilaCoin pilaCoin) {
+    public void enviar(PilaCoin pilaCoin) {
 
         HttpEntity<PilaCoin> entidade = new HttpEntity<>(pilaCoin, headers);
 
