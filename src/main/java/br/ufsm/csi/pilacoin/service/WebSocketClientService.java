@@ -1,6 +1,6 @@
 package br.ufsm.csi.pilacoin.service;
 
-import br.ufsm.csi.pilacoin.RestDiff;
+import br.ufsm.csi.pilacoin.model.Diff;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
@@ -28,7 +28,7 @@ public class WebSocketClientService {
 
     @PostConstruct
     private void init() {
-        String webSocketAddress = "ws://" + serverAddress + "/websocket/websocket";
+        String webSocketAddress = "ws://" + this.serverAddress + "/websocket/websocket";
         System.out.println("Iniciando...");
 
         StandardWebSocketClient client = new StandardWebSocketClient();
@@ -68,13 +68,13 @@ public class WebSocketClientService {
 
         @Override
         public Type getPayloadType(StompHeaders headers) {
-            return Objects.equals(headers.getDestination(), endPoint) ? RestDiff.class : null;
+            return Objects.equals(headers.getDestination(), endPoint) ? Diff.class : null;
         }
 
         @Override
         public void handleFrame(StompHeaders headers, Object payload) {
             assert payload != null;
-            dificuldade = new BigInteger(((RestDiff) payload).getDificuldade(), 16);
+            dificuldade = new BigInteger(((Diff) payload).getDificuldade(), 16);
         }
 
     }

@@ -1,4 +1,4 @@
-package br.ufsm.csi.pilacoin;
+package br.ufsm.csi.pilacoin.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,4 +9,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RestDiff { private String dificuldade; }
+public class Diff {
+    private String dificuldade;
+}

@@ -1,6 +1,5 @@
 package br.ufsm.csi.pilacoin.util;
 
-import br.ufsm.csi.pilacoin.config.PathConfig;
 import lombok.SneakyThrows;
 
 import java.io.BufferedReader;
@@ -12,7 +11,7 @@ import java.security.PublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
-public final class KeysUtil {
+public final class KeysPairUtil {
 
     @SneakyThrows
     public static byte[] getKey(String caminho) {
@@ -51,8 +50,8 @@ public final class KeysUtil {
 
     @SneakyThrows
     public static KeyPair getKeyPair() {
-        byte[] bytePublic = getKey(PathConfig.CAMINHO_PUBLIC_KEY);
-        byte[] bytePrivate = getKey(PathConfig.CAMINHO_PRIVATE_KEY);
+        byte[] bytePublic = getKey("src/main/resources/arquivos/public-key.txt");
+        byte[] bytePrivate = getKey("src/main/resources/arquivos/private-key.txt");
 
         PublicKey publicKey = convertToPublicKey(bytePublic);
         PrivateKey privateKey = convertToPrivateKey(bytePrivate);
